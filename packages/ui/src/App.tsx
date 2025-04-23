@@ -1,43 +1,51 @@
-import React, { useState } from 'react'
+import { useState } from 'react';
 
 function App() {
-  const [file, setFile] = useState<File | null>(null)
-  const [result, setResult] = useState<string>('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [text, setText] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedFile(e.target.files?.[0] || null);
+    setText('');
+  };
 
   const handleUpload = async () => {
-    if (!file) return alert('Выберите PDF файл')
-    const formData = new FormData()
-    formData.append('file', file)
+    if (!selectedFile) return;
 
-    const response = await fetch('/upload-pdf', {
-      method: 'POST',
-      body: formData,
-    })
+    const formData = new FormData();
+    formData.append('file', selectedFile);
 
-    const data = await response.json()
-    setResult(data.text || data.preview || 'Текст не найден')
-  }
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      setText(data.text || '❗ Текст не извлечён');
+    } catch (err) {
+      setText('❌ Ошибка при загрузке');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div style={{ padding: 24, fontFamily: 'sans-serif' }}>
+    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
       <h1>Flowise NSBU – Загрузка PDF</h1>
-      <input
-        type="file"
-        accept="application/pdf"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-      />
-      <button onClick={handleUpload} style={{ marginLeft: 12 }}>
-        Загрузить
+      <input type="file" onChange={handleFileChange} accept=".pdf" />
+      <button onClick={handleUpload} disabled={!selectedFile || loading} style={{ marginLeft: '1rem' }}>
+        {loading ? 'Загрузка...' : 'Загрузить'}
       </button>
-
-      {result && (
-        <div style={{ marginTop: 24 }}>
-          <h3>Результат:</h3>
-          <pre style={{ background: '#f0f0f0', padding: 16 }}>{result}</pre>
-        </div>
-      )}
+      <hr />
+      <div style={{ whiteSpace: 'pre-wrap', maxHeight: '400px', overflowY: 'scroll', marginTop: '1rem' }}>
+        {text}
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
