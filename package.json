@@ -1,0 +1,14 @@
+{
+  "name": "flowise-nsbu",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["packages/server", "packages/ui"],
+  "scripts": {
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "dev": "turbo run dev"
+  },
+  "devDependencies": {
+    "turbo": "^1.10.13"
+  }
+}
