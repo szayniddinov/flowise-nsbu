@@ -7,6 +7,7 @@ import fs from 'fs';
 import pdfParse from 'pdf-parse';
 import path from 'path';
 import { initCollection, uploadChunks } from './qdrant';
+import { askQuestion } from './ask';
 
 dotenv.config();
 
@@ -37,6 +38,19 @@ app.post('/api/upload', upload.single('file'), async (req, res) => {
   } catch (err) {
     console.error('PDF upload error:', err);
     res.status(500).json({ error: 'Failed to process PDF' });
+  }
+});
+
+app.post('/api/ask', async (req, res) => {
+  const { question } = req.body;
+  if (!question) return res.status(400).json({ error: 'Question is required' });
+
+  try {
+    const result = await askQuestion(question);
+    res.json(result);
+  } catch (err) {
+    console.error('Ask error:', err);
+    res.status(500).json({ error: 'Failed to get answer from GPT' });
   }
 });
 
