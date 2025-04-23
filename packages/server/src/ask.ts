@@ -26,6 +26,6 @@ export const askQuestion = async (question: string) => {
 
   return {
     answer: response.text,
-    sources: response.sourceDocuments?.map(d => d.metadata?.source || 'unknown'),
+    sources: response.sourceDocuments?.map((d: any) => d.metadata?.source || 'unknown'),
   }
 }
