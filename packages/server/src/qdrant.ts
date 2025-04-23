@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 const COLLECTION_NAME = 'nsbu-documents';
 
 export const qdrant = new QdrantClient({
-  url: 'https://<ТВОЙ-КЛАСТЕР>.qdrant.tech', // замените на адрес вашего кластера
-  apiKey: '<API-КЛЮЧ>' // замените на ваш Qdrant API-ключ
+  url: process.env.QDRANT_URL!,
+  apiKey: process.env.QDRANT_API_KEY,
 });
 
 export const initCollection = async () => {
